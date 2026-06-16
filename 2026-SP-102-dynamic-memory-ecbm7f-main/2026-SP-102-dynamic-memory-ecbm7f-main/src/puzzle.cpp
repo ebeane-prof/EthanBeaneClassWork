@@ -1,0 +1,163 @@
+#include "puzzle.h"
+#include <iostream>
+using namespace std;
+
+/*
+First familiarize yourself with the Puzzle class defined in 'puzzle.h'.
+Then, do your work here before proceeding to 'main.cpp'.
+*/
+
+/*
+Purpose: Have member variable 'symbols' point to a r-by-c dynamic char array,
+and set members rows/cols accordingly Post-conditions:
+  - symbols points to r-by-c dynamic array of char
+  - rows == r
+  - cols == c
+*/
+void Puzzle::create_grid(int r, int c) {
+  rows = r;
+  cols = c;
+  symbols = new char *[rows];
+  for (int i = 0; i < rows; i++)
+    symbols[i] = new char[cols];
+}
+
+/*
+Purpose: de-allocates symbols, and sets symbols to nullptr
+*/
+void Puzzle::delete_grid() {
+
+  if (!symbols) {
+    return;
+  } /* fix this somewhere?*/
+
+  for (int i = 0; i < rows; i++)
+    delete[] symbols[i];
+  delete[] symbols;
+
+  symbols = nullptr;
+  rows = 0;
+  cols = 0;
+}
+
+/*
+Purpose: shifts a row of symbols (right if reverse = false, left if reverse =
+true), wrapping the furthest symbol around
+*/
+void Puzzle::shift_row(int row, bool reverse) {
+  if (!symbols || row < 0 || row >= rows) {
+    return;
+  }
+
+  if (!reverse) { // RIGHT
+    char last = symbols[row][cols - 1];
+
+    for (int j = cols - 1; j > 0; j--) {
+      symbols[row][j] = symbols[row][j - 1];
+    }
+
+    symbols[row][0] = last;
+
+  } else { // LEFT
+    char first = symbols[row][0];
+
+    for (int j = 0; j < cols - 1; j++) {
+      symbols[row][j] = symbols[row][j + 1];
+    }
+
+    symbols[row][cols - 1] = first;
+  }
+}
+
+// Chat GPT was used to clean up this section
+/*
+Purpose: shifts a column of symbols (down if reverse = false, up if reverse =
+true), wrapping the furthest symbol around
+*/
+
+void Puzzle::shift_col(int col, bool reverse) {
+  if (!symbols || col < 0 || col >= cols) {
+    return;
+  }
+
+  if (!reverse) { // DOWN
+    char last = symbols[rows - 1][col];
+
+    for (int i = rows - 1; i > 0; i--) {
+      symbols[i][col] = symbols[i - 1][col];
+    }
+
+    symbols[0][col] = last;
+
+  } else { // UP
+    char first = symbols[0][col];
+
+    for (int i = 0; i < rows - 1; i++) {
+      symbols[i][col] = symbols[i + 1][col];
+    }
+
+    symbols[rows - 1][col] = first;
+  }
+}
+
+// chat GPT was used to clean up this section
+/*
+Purpose: Read in symbols to initialize the puzzle
+Follow the format from the sample input
+*/
+void Puzzle::fill_grid() {
+  if (!symbols) {
+    return;
+  }
+  for (int i = 0; i < rows; i++)
+    for (int j = 0; j < cols; j++)
+      cin >> symbols[i][j];
+}
+
+/*
+Purpose: Print the contents of the puzzle
+Follow the format from the sample output
+*/
+void Puzzle::print_grid() const {
+
+  if (!symbols) {
+    return;
+  }
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      cout << symbols[i][j];
+      if (j != cols - 1)
+        cout << " ";
+    }
+    cout << "\n";
+  }
+}
+
+// Default Member Functions
+// These are provided for your reference on this assignment.
+// There is no need to change the functions below.
+
+const Puzzle &Puzzle::operator=(const Puzzle &rhs) {
+  // Performs a deep-copy of a Puzzle object
+
+  delete_grid();
+  create_grid(rhs.rows, rhs.cols);
+  for (int r = 0; r < rhs.rows; r++)
+    for (int c = 0; c < rhs.cols; c++)
+      symbols[r][c] = rhs.symbols[r][c];
+
+  return *this;
+}
+
+Puzzle::Puzzle(const Puzzle &source) {
+
+  symbols = nullptr;
+  *this = source; // invokes operator=
+}
+
+Puzzle::~Puzzle() {
+  // De-allocates dynamic member variables
+
+  if (symbols != nullptr)
+    delete_grid();
+}
