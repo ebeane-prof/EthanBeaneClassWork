@@ -1,0 +1,1 @@
+This test performs _static analysis_ (using cppcheck) on your code to try and identify potential problems. Anything labeled **warning** or **error** will cause you to fail. You'll need to read the feedback given and fix your code to address it.
